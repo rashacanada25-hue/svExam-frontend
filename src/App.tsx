@@ -8,7 +8,7 @@ function App() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // כאן אנחנו פונים לשרת שרץ בפורט 3000
+      // פנייה לשרת שרץ בפורט 3000
       const response = await axios.get('http://localhost:3000/');
       setMessage(response.data);
     } catch (error) {
@@ -19,23 +19,23 @@ function App() {
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'Arial' }}>
-      <h1>בדיקת חיבור פרויקט</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center font-sans p-4" dir="rtl">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">בדיקת חיבור פרויקט</h1>
       
-      <div style={{ 
-        margin: '20px auto', 
-        padding: '20px', 
-        border: '2px solid #333', 
-        width: '300px',
-        borderRadius: '8px'
-      }}>
-        {loading ? <p>טוען נתונים מהשרת...</p> : <p>{message}</p>}
+      <div className="w-full max-w-sm bg-white border-2 border-gray-300 rounded-xl p-6 shadow-sm text-center mb-6 transition-all">
+        {loading ? (
+          <p className="text-gray-500 animate-pulse">טוען נתונים מהשרת...</p>
+        ) : (
+          <p className="text-gray-700 font-medium text-lg leading-relaxed">{message}</p>
+        )}
       </div>
 
       <button 
         onClick={fetchData} 
-        style={{ padding: '10px 20px', fontSize: '16px', cursor: 'pointer' }}>
-        Click me
+        disabled={loading}
+        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200"
+      >
+        {loading ? "בטעינה..." : "לחץ לקבלת נתונים"}
       </button>
     </div>
   );
