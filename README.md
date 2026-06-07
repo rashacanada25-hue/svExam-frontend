@@ -4,27 +4,33 @@ React + TypeScript + Vite app for the Fullstack Movie Watchlist exam.
 
 ## Live Link
 
-- Frontend: _(add your Vercel URL here)_
+- Frontend: https://frontend-umber-psi-57.vercel.app
 
 ## Backend
 
-- Backend repo: _(add GitHub link)_
-- Backend live: _(add deployed backend URL)_
+- Backend repo: https://github.com/rashacanada25-hue/SvExam-Backend
+- Backend live: https://svexam-backend-production-b40e.up.railway.app
 
-Set the API URL in `.env`:
+## Environment Variables
+
+Local development (`.env`):
 
 ```env
 VITE_API_URL=http://localhost:3000
 ```
 
-In production, set `VITE_API_URL` to your deployed backend URL in Vercel project settings.
+Production (Vercel project settings):
+
+```env
+VITE_API_URL=https://svexam-backend-production-b40e.up.railway.app
+```
 
 ## Pages
 
 | Route | Page |
 |-------|------|
 | `/all-movies` | All movies with delete button |
-| `/add-movie` | Add movie form with validation |
+| `/add-movie` | Add movie form with validation and AI description |
 | `/search-movies` | Live search by title |
 
 ## Local Setup
@@ -44,4 +50,4 @@ npm run dev
 
 ## AI Usage
 
-AI was used with Cursor to build the React pages, axios API layer, shadcn components, and the "Generate Description with AI" button on the add-movie page.
+AI was used with Cursor to build the React pages, axios API layer, shadcn components, and the AI description generation on the add-movie page.

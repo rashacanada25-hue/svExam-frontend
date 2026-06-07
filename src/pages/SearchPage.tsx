@@ -11,21 +11,15 @@ function isAborted(error: unknown): boolean {
 export function SearchPage() {
   const [query, setQuery] = useState('');
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const handleQueryChange = (value: string) => {
-    setQuery(value);
-    if (!value.trim()) {
-      setMovies([]);
-      setError(null);
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     const trimmed = query.trim();
-    if (!trimmed) return;
+    if (!trimmed) {
+      setMovies([]);
+      setError(null);
+      return;
+    }
 
     const controller = new AbortController();
     let cancelled = false;
@@ -33,7 +27,6 @@ export function SearchPage() {
     const timer = setTimeout(() => {
       void (async () => {
         if (cancelled) return;
-        setLoading(true);
         setError(null);
 
         try {
@@ -43,10 +36,6 @@ export function SearchPage() {
           if (cancelled || controller.signal.aborted || isAborted(err)) return;
           setError(getApiErrorMessage(err, 'Search failed. Try again.'));
           setMovies([]);
-        } finally {
-          if (!cancelled && !controller.signal.aborted) {
-            setLoading(false);
-          }
         }
       })();
     }, 300);
@@ -65,8 +54,8 @@ export function SearchPage() {
       <Input
         type="text"
         value={query}
-        onChange={(e) => handleQueryChange(e.target.value)}
-        placeholder="Type a movie title..."
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Movie title"
         className="mb-6"
       />
 
@@ -76,27 +65,15 @@ export function SearchPage() {
         </p>
       )}
 
-      {loading ? (
-        <p className="text-muted-foreground animate-pulse text-center py-8">Searching...</p>
-      ) : !query.trim() ? (
-        <p className="text-muted-foreground text-center py-12 bg-card border border-border rounded-xl">
-          Type a title to search movies
-        </p>
-      ) : movies.length === 0 ? (
-        <p className="text-muted-foreground text-center py-12 bg-card border border-border rounded-xl">
-          No matching movies found
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {movies.map((movie) => (
-            <div key={movie.id} className="bg-card border border-border rounded-xl p-5 shadow-sm">
-              <h3 className="text-lg font-bold text-foreground">{movie.title}</h3>
-              <p className="text-muted-foreground text-sm mt-1">{movie.genre}</p>
-              <p className="text-foreground text-sm mt-2">{movie.description}</p>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="space-y-4">
+        {movies.map((movie) => (
+          <div key={movie.id} className="bg-card border border-border rounded-xl p-5 shadow-sm">
+            <h3 className="text-lg font-bold text-foreground">{movie.title}</h3>
+            <p className="text-muted-foreground text-sm mt-1">{movie.genre}</p>
+            <p className="text-foreground text-sm mt-2">{movie.description}</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

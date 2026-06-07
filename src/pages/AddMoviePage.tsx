@@ -40,6 +40,7 @@ function validateForm(form: NewMovie): string | null {
 export function AddMoviePage() {
   const navigate = useNavigate();
   const [form, setForm] = useState<NewMovie>(emptyForm);
+  const [movieIdea, setMovieIdea] = useState('');
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -70,18 +71,18 @@ export function AddMoviePage() {
   };
 
   const handleGenerateDescription = async () => {
-    const title = form.title.trim();
     const genre = form.genre.trim();
+    const titleForAi = movieIdea.trim() || form.title.trim();
 
-    if (!title || !genre) {
-      alert('Enter title and genre before generating a description.');
+    if (!titleForAi || !genre) {
+      alert('Enter a movie idea (or title) and genre before generating a description.');
       return;
     }
 
     setGenerating(true);
     setSubmitError(null);
     try {
-      const result = await generateMovieDescription(title, genre);
+      const result = await generateMovieDescription(titleForAi, genre);
       setForm((prev) => ({ ...prev, description: result.description.slice(0, 200) }));
     } catch (err) {
       alert(getApiErrorMessage(err, 'Failed to generate description with AI.'));
@@ -131,6 +132,22 @@ export function AddMoviePage() {
         </div>
 
         <div>
+          <label htmlFor="movieIdea" className="block text-sm font-medium text-foreground mb-1">
+            Movie Idea (for AI)
+          </label>
+          <Textarea
+            id="movieIdea"
+            value={movieIdea}
+            onChange={(e) => setMovieIdea(e.target.value)}
+            placeholder='For example: "A sci-fi movie about a robot trying to understand emotions"'
+          />
+        </div>
+
+        <Button type="button" variant="secondary" onClick={handleGenerateDescription} disabled={generating}>
+          {generating ? 'Generating...' : 'Generate Description (AI)'}
+        </Button>
+
+        <div>
           <label htmlFor="description" className="block text-sm font-medium text-foreground mb-1">
             Description
           </label>
@@ -139,13 +156,9 @@ export function AddMoviePage() {
             maxLength={200}
             value={form.description}
             onChange={(e) => updateField('description', e.target.value)}
-            placeholder="Short movie description"
+            placeholder="Filled manually or by AI"
           />
         </div>
-
-        <Button type="button" variant="secondary" onClick={handleGenerateDescription} disabled={generating}>
-          {generating ? 'Generating...' : 'Generate Description with AI'}
-        </Button>
 
         {submitError && (
           <p className="text-destructive text-sm font-medium bg-destructive/10 border border-destructive/20 rounded-lg p-3">
