@@ -1,98 +1,68 @@
 import { useEffect, useState } from 'react';
-import { deleteMovie, getApiErrorMessage, getMovies } from '@/api/movies';
+import { getMovies, deleteMovie, getApiErrorMessage } from '@/api/movies';
 import { Button } from '@/components/ui/button';
-import type { Movie } from '@/types/movie';
+import { type Movie } from '@/types/movie';
+import "../App.css";
 
 export function MoviesPage() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let ignore = false;
-
-    void (async () => {
-      try {
-        const data = await getMovies();
-        if (!ignore) setMovies(data);
-      } catch (err) {
-        if (!ignore) {
-          setError(getApiErrorMessage(err, 'Failed to load movies. Make sure the Backend is running.'));
-          setMovies([]);
-        }
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    })();
-
-    return () => {
-      ignore = true;
-    };
+    getMovies().then(data => setMovies(data));
   }, []);
 
   const handleDelete = async (id: string | number) => {
     setDeletingId(id);
-    setError(null);
-
     try {
       await deleteMovie(id);
-      setMovies((prev) => prev.filter((movie) => String(movie.id) !== String(id)));
+      setMovies(movies.filter(m => m.id !== id));
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete movie. Try again.'));
+      console.error(getApiErrorMessage(err));
     } finally {
       setDeletingId(null);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16">
-        <p className="text-muted-foreground animate-pulse">Loading movies...</p>
-      </div>
-    );
-  }
+  const generateAIDescription = async (movie: Movie) => {
+    try {
+      const response = await fetch('http://localhost:3000/movies/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: movie.title, genre: movie.genre }),
+      });
+      const data = await response.json();
+      setMovies(prev => prev.map(m => 
+        m.id === movie.id ? { ...m, description: data.description } : m
+      ));
+    } catch (error) {
+      console.error("AI Error:", error);
+    }
+  };
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">All Movies</h2>
-
-      {error && (
-        <p className="mb-4 text-destructive font-medium text-center bg-destructive/10 border border-destructive/20 rounded-lg p-3">
-          {error}
-        </p>
-      )}
-
-      {movies.length === 0 ? (
-        <p className="text-muted-foreground text-center py-12 bg-card border border-border rounded-xl">
-          No movies to display
-        </p>
-      ) : (
-        <div className="space-y-4">
-          {movies.map((movie) => (
-            <div key={movie.id} className="bg-card border border-border rounded-xl p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <h3 className="text-lg font-bold text-foreground">{movie.title}</h3>
-                  <p className="text-muted-foreground text-sm mt-1">{movie.genre}</p>
-                  <p className="text-foreground text-sm mt-2">{movie.description}</p>
-                </div>
-
-                {movie.id != null && (
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(movie.id!)}
-                    disabled={deletingId === movie.id}
-                  >
-                    {deletingId === movie.id ? 'Deleting...' : 'Delete Movie'}
-                  </Button>
-                )}
-              </div>
+    <div className="movies-container" style={{ padding: '20px' }}>
+      <h1>All Movies</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+        {movies.map(movie => (
+          <div key={movie.id} style={{ border: '1px solid #ddd', borderRadius: '12px', padding: '20px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+            <h3>{movie.title}</h3>
+            <p><strong>Genre:</strong> {movie.genre}</p>
+            <p>{movie.description || "No description yet."}</p>
+            
+            <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+              <Button variant="destructive" onClick={() => handleDelete(movie.id)} disabled={deletingId === movie.id}>
+                {deletingId === movie.id ? 'Deleting...' : 'Delete Movie'}
+              </Button>
+              {!movie.description && (
+                <Button onClick={() => generateAIDescription(movie)}>
+                  AI Description
+                </Button>
+              )}
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
