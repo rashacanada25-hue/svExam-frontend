@@ -49,7 +49,7 @@ export function SearchPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">Search Movies</h2>
+      <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">Search Movies</h2>
 
       <Input
         type="text"
@@ -67,10 +67,10 @@ export function SearchPage() {
 
       <div className="space-y-4">
         {movies.map((movie) => (
-          <div key={movie.id} className="bg-card border border-border rounded-xl p-5 shadow-sm">
-            <h3 className="text-lg font-bold text-foreground">{movie.title}</h3>
+          <div key={movie.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 shadow-sm">
+            <h3 className="text-base sm:text-lg font-bold text-foreground break-words">{movie.title}</h3>
             <p className="text-muted-foreground text-sm mt-1">{movie.genre}</p>
-            <p className="text-foreground text-sm mt-2">{movie.description}</p>
+            <p className="text-foreground text-sm mt-2 break-words">{movie.description}</p>
           </div>
         ))}
       </div>

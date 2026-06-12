@@ -97,11 +97,11 @@ export function AddMoviePage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-foreground mb-6">Add Movie</h2>
+      <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-4 sm:mb-6">Add Movie</h2>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-card border border-border rounded-xl p-6 shadow-sm space-y-4"
+        className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-sm space-y-4"
         noValidate
       >
         <div>
@@ -143,7 +143,13 @@ export function AddMoviePage() {
           />
         </div>
 
-        <Button type="button" variant="secondary" onClick={handleGenerateDescription} disabled={generating}>
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full sm:w-auto"
+          onClick={handleGenerateDescription}
+          disabled={generating}
+        >
           {generating ? 'Generating...' : 'Generate Description (AI)'}
         </Button>
 
