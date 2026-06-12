@@ -51,3 +51,10 @@ npm run dev
 ## AI Usage
 
 AI was used with Cursor to build the React pages, axios API layer, shadcn components, and the AI description generation on the add-movie page.
+
+## Exam Links (Submission)
+
+- Frontend: https://frontend-umber-psi-57.vercel.app
+- Backend: https://svexam-backend-production-b40e.up.railway.app
+- Frontend GitHub: https://github.com/rashacanada25-hue/svExam-frontend
+- Backend GitHub: https://github.com/rashacanada25-hue/SvExam-Backend
